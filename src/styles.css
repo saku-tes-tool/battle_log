@@ -1,0 +1,682 @@
+/* ==========================================================================
+   Base
+   アプリ全体の背景、フォント、スクロールバー非表示などの土台。
+   ========================================================================== */
+
+:root {
+  --app-max-width: 430px;
+  color: #f5f7fb;
+  background: #1b1b20;
+  font-family:
+    Inter, "Noto Sans JP", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  background:
+    linear-gradient(180deg, rgba(69, 88, 132, 0.15), transparent 280px),
+    #1b1b20;
+  scrollbar-width: none;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  background: #1b1b20;
+}
+
+body::-webkit-scrollbar,
+.modal::-webkit-scrollbar {
+  display: none;
+}
+
+.modal {
+  scrollbar-width: none;
+}
+
+/* ==========================================================================
+   Layout
+   スマホは幅100%、PCは中央に最大幅で表示する外枠。
+   ========================================================================== */
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+.page-shell {
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  overflow-x: hidden;
+  background: #1b1b20;
+}
+
+.app {
+  width: 100%;
+  max-width: var(--app-max-width);
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: 22px 16px max(86px, calc(86px + env(safe-area-inset-bottom)));
+  background: #1b1b20;
+}
+
+/* ==========================================================================
+   Header and Buttons
+   共通ボタン、見出し、操作ボタンの基本スタイル。
+   ========================================================================== */
+
+.app-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 6px 0 18px;
+}
+
+.app-header > div {
+  min-width: 0;
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  color: #8fb8ff;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 1.5rem;
+  line-height: 1.15;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+
+h2 {
+  font-size: 1rem;
+  letter-spacing: 0;
+}
+
+.icon-button,
+.small-icon-button,
+.card-action-button,
+.primary-button,
+.secondary-button,
+.ghost-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 8px;
+  color: #f7f8ff;
+  background: #292a31;
+  font-weight: 700;
+}
+
+.icon-button {
+  padding: 0 12px;
+  white-space: nowrap;
+}
+
+.icon-button:disabled {
+  opacity: 0.42;
+}
+
+.small-icon-button,
+.card-action-button {
+  min-height: 34px;
+  padding: 0 10px;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.card-action-buttons {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.card-action-button {
+  background: #30323b;
+  color: #dbe6ff;
+}
+
+.card-action-button.danger {
+  color: #ffd9d9;
+  background: #3a2428;
+}
+
+.icon-button.danger {
+  color: #ffd7d7;
+  background: #3a2428;
+}
+
+.primary-button {
+  min-width: 112px;
+  padding: 0 18px;
+  border-color: rgba(119, 154, 255, 0.42);
+  background: #516ee8;
+}
+
+.primary-button.danger {
+  border-color: rgba(255, 148, 148, 0.42);
+  background: #a53d4a;
+}
+
+.secondary-button {
+  min-width: 112px;
+  padding: 0 18px;
+  color: #d7d9e7;
+}
+
+.ghost-button {
+  width: 100%;
+  padding: 0 14px;
+  background: transparent;
+  color: #a9c5ff;
+}
+
+.ghost-button.compact {
+  width: auto;
+  min-height: 36px;
+  padding: 0 11px;
+  color: #ffdada;
+}
+
+/* ==========================================================================
+   Formation
+   編成カードとキャラ/装備の表示。
+   ========================================================================== */
+
+.formation-panel,
+.empty-card,
+.action-card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: #24252b;
+}
+
+.formation-panel {
+  padding: 15px;
+}
+
+.panel-title-row,
+.section-title {
+  margin-bottom: 12px;
+}
+
+.panel-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.formation-list {
+  display: grid;
+  gap: 8px;
+}
+
+.formation-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.formation-item strong,
+.formation-item span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.formation-item:last-child {
+  border-bottom: 0;
+}
+
+.formation-item span,
+.empty-text,
+.empty-card p,
+.action-row small,
+.action-row__head span,
+.section-title span,
+.modal__header p {
+  color: #a7abbc;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.log-section {
+  padding-top: 18px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.log-list {
+  display: grid;
+  gap: 12px;
+}
+
+.empty-card {
+  padding: 18px;
+}
+
+.empty-card p {
+  margin-top: 8px;
+}
+
+.empty-card__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  margin-top: 14px;
+  padding: 0 16px;
+  border: 1px solid rgba(119, 154, 255, 0.42);
+  border-radius: 8px;
+  color: #f7f8ff;
+  background: #516ee8;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   Action Log
+   タイム付きログカード、編集/削除ボタン、行動本文の表示。
+   ========================================================================== */
+
+.action-card {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  gap: 14px;
+  padding: 0;
+  color: inherit;
+  text-align: left;
+  overflow: hidden;
+}
+
+.action-card__time {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background: #313955;
+}
+
+.action-card__time span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100%;
+  color: #c9dcff;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.action-card__body {
+  min-width: 0;
+  padding: 16px 14px 16px 0;
+}
+
+.action-card__toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+
+.action-list {
+  display: grid;
+  gap: 13px;
+}
+
+.action-row {
+  padding-left: 12px;
+  border-left: 3px solid #7da5ff;
+}
+
+.action-row__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.action-row__head strong,
+.action-row__head span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.action-row__head strong {
+  color: #aebfff;
+  font-size: 0.86rem;
+  line-height: 1.35;
+}
+
+.action-row p {
+  margin-top: 3px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.action-row small {
+  display: block;
+  margin-top: 3px;
+  white-space: pre-wrap;
+}
+
+/* ==========================================================================
+   Footer and Fixed Add Action
+   保存/取込などの下部操作と、ログが長い時でも使える固定追加バー。
+   ========================================================================== */
+
+.footer-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.footer-actions .danger {
+  grid-column: 1 / -1;
+}
+
+.visually-hidden-file {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  opacity: 0;
+}
+
+.bottom-action-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: min(100%, var(--app-max-width));
+  min-height: max(72px, calc(72px + env(safe-area-inset-bottom)));
+  padding: 10px 16px max(12px, env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  background:
+    linear-gradient(180deg, rgba(27, 27, 32, 0.82), #1b1b20 30px),
+    #1b1b20;
+  box-shadow: 0 -18px 28px rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.bottom-action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid rgba(119, 154, 255, 0.32);
+  border-radius: 8px;
+  color: #f7f8ff;
+  background: #516ee8;
+  font-weight: 700;
+  pointer-events: auto;
+}
+
+/* ==========================================================================
+   Modal and Forms
+   編成編集・行動追加で共有するモーダル、入力、下部固定アクション。
+   ========================================================================== */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 18px 10px;
+  background: rgba(0, 0, 0, 0.66);
+}
+
+.modal {
+  width: min(100%, var(--app-max-width));
+  max-height: min(86vh, 760px);
+  overflow: auto;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: #202128;
+  box-shadow: 0 22px 64px rgba(0, 0, 0, 0.55);
+  position: relative;
+}
+
+.modal-close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  color: #dce1ef;
+  background: #2a2c34;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.modal__header {
+  padding-right: 42px;
+  margin-bottom: 16px;
+}
+
+.modal__header p {
+  margin-top: 5px;
+}
+
+.form-stack {
+  display: grid;
+  gap: 13px;
+}
+
+label {
+  display: grid;
+  gap: 6px;
+}
+
+label span,
+legend {
+  color: #d5d8e7;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #f7f8ff;
+  background: #15161b;
+  outline: none;
+}
+
+textarea {
+  min-height: 78px;
+  resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #80a4ff;
+  box-shadow: 0 0 0 3px rgba(128, 164, 255, 0.16);
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled,
+fieldset:disabled {
+  opacity: 0.48;
+}
+
+fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: #262730;
+}
+
+legend {
+  padding: 0 6px;
+}
+
+.split-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.action-fieldset {
+  display: grid;
+  gap: 10px;
+}
+
+.modal__actions {
+  position: sticky;
+  bottom: -18px;
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin: 18px -18px -18px;
+  padding: 12px 18px 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(32, 33, 40, 0), #202128 16px),
+    #202128;
+}
+
+.is-exporting-image .no-export {
+  display: none !important;
+}
+
+/* ==========================================================================
+   Storybook Helpers
+   単体Storyでもアプリと同じ幅感で確認するための補助。
+   ========================================================================== */
+
+.story-card-frame {
+  width: 100%;
+  max-width: var(--app-max-width);
+  margin: 0 auto;
+  padding: 18px 16px;
+}
+
+/* ==========================================================================
+   Responsive
+   狭いスマホでは余白を詰め、PCでは中央カラムを少し広げる。
+   ========================================================================== */
+
+@media (max-width: 360px) {
+  .app {
+    padding-inline: 12px;
+  }
+
+  .app-header {
+    flex-direction: column;
+  }
+
+  .footer-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .split-fields,
+  .modal__actions {
+    grid-template-columns: 1fr;
+  }
+
+  .modal__actions {
+    display: grid;
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --app-max-width: 620px;
+  }
+
+  .app {
+    padding: 32px 28px 92px;
+  }
+
+  .app-header {
+    padding-bottom: 20px;
+  }
+
+  .formation-panel {
+    padding: 20px;
+  }
+
+  .action-card {
+    grid-template-columns: 76px minmax(0, 1fr);
+  }
+
+  .action-card__body {
+    padding: 20px 18px 20px 0;
+  }
+
+  .bottom-action-bar {
+    padding-inline: 28px;
+  }
+}
