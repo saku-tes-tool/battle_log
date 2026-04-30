@@ -44,9 +44,10 @@ export function BattleLogManager({
     <>
       <div className="page-shell">
         <main className="app" ref={appRef}>
-          <header className="app-header">
+          <header className="app-header no-export">
             <div>
               <h1>バトルログ管理</h1>
+              <p className="storage-note">※入力したデータはこの端末内にのみ保存され、外部へ送信されません。</p>
             </div>
           </header>
 

@@ -111,6 +111,13 @@ button:disabled {
   font-weight: 700;
 }
 
+.storage-note {
+  margin-top: 8px;
+  color: #a7abbc;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
 h1,
 h2,
 p {
