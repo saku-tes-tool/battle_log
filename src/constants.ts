@@ -20,6 +20,7 @@ export const createEmptyCharacters = (): Character[] =>
   Array.from({ length: 5 }, (_, index) => ({
     id: `character-${index + 1}`,
     name: '',
+    note: '',
     equipment1: '未選択',
     equipment2: '未選択',
   }));

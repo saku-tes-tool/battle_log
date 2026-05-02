@@ -1,6 +1,7 @@
 export type Character = {
   id: string;
   name: string;
+  note: string;
   equipment1: string;
   equipment2: string;
 };

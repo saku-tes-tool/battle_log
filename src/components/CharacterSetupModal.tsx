@@ -33,9 +33,11 @@ export function CharacterSetupModal({ characters, onClose, onSave }: CharacterSe
     onSave(
       draft.map((character, index) => {
         const enabled = enabledIndexes.has(index);
+        const note = character.note ?? '';
         return {
           ...character,
           name: enabled ? character.name.trim() : '',
+          note: enabled && character.name.trim() ? note.trim() : '',
           equipment1: enabled && character.name.trim() ? character.equipment1 : '未選択',
           equipment2: enabled && character.name.trim() ? character.equipment2 : '未選択',
         };
@@ -99,6 +101,14 @@ export function CharacterSetupModal({ characters, onClose, onSave }: CharacterSe
                     </select>
                   </label>
                 </div>
+                <label>
+                  <span>備考</span>
+                  <input
+                    value={character.note ?? ''}
+                    disabled={!equipmentEnabled}
+                    onChange={(event) => updateCharacter(index, { note: event.target.value })}
+                  />
+                </label>
               </fieldset>
             );
           })}

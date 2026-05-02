@@ -267,9 +267,16 @@ h2 {
 }
 
 .formation-item strong,
-.formation-item span {
+.formation-item span,
+.formation-item small {
   min-width: 0;
   overflow-wrap: anywhere;
+}
+
+.formation-item__main {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
 }
 
 .formation-item:last-child {
@@ -277,6 +284,7 @@ h2 {
 }
 
 .formation-item span,
+.formation-item small,
 .empty-text,
 .empty-card p,
 .action-row small,

@@ -21,6 +21,13 @@ export const formatBattleLogText = (data: AppData) => {
         (equipment) => equipment && equipment !== '未選択',
       );
       lines.push(`${character.name} - ${equipments.join(' / ') || '装備未選択'}`);
+      const note = character.note?.trim();
+      if (note) {
+        note
+          .split(/\r?\n/)
+          .filter((line) => line.trim())
+          .forEach((line) => lines.push(`  ※ ${line.trim()}`));
+      }
     });
   } else {
     lines.push('未登録');

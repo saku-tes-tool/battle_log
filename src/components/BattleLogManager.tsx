@@ -61,16 +61,22 @@ export function BattleLogManager({
             </div>
             {activeCharacters.length ? (
               <div className="formation-list">
-                {activeCharacters.map((character) => (
-                  <div className="formation-item" key={character.id}>
-                    <strong>{character.name}</strong>
-                    <span>
-                      {[character.equipment1, character.equipment2]
-                        .filter((equipment) => equipment && equipment !== '未選択')
-                        .join(' / ') || '装備未選択'}
-                    </span>
-                  </div>
-                ))}
+                {activeCharacters.map((character) => {
+                  const note = character.note?.trim();
+                  return (
+                    <div className="formation-item" key={character.id}>
+                      <div className="formation-item__main">
+                        <strong>{character.name}</strong>
+                        {note && <small>{note}</small>}
+                      </div>
+                      <span>
+                        {[character.equipment1, character.equipment2]
+                          .filter((equipment) => equipment && equipment !== '未選択')
+                          .join(' / ') || '装備未選択'}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               <p className="empty-text">編成編集からキャラを登録してください。</p>

@@ -31,6 +31,7 @@ const normalizeCharacters = (value: unknown): Character[] => {
     return {
       id,
       name: asString(source.name).trim(),
+      note: asString(source.note).trim(),
       equipment1: asString(source.equipment1, '未選択') || '未選択',
       equipment2: asString(source.equipment2, '未選択') || '未選択',
     };
