@@ -626,6 +626,15 @@ legend {
   display: none !important;
 }
 
+.is-exporting-image .page-shell,
+.is-exporting-image .app {
+  min-height: 0;
+}
+
+.is-exporting-image .app {
+  padding-bottom: 16px;
+}
+
 /* ==========================================================================
    Storybook Helpers
    単体Storyでもアプリと同じ幅感で確認するための補助。
