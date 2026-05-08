@@ -10,11 +10,14 @@ export const EQUIPMENT_OPTIONS = [
   '専用魔道具',
   '専用(LV用)魔道具',
   '+魔道具',
-  '速度',
-  '攻撃・クリティカル',
-  '被ダメ軽減',
+  'ブレスレット',
+  'マント',
+  '行動速度',
+  'クリティカル率',
+  'クリティカル攻撃倍率',
+  '攻撃力',
+  '被ダメージカット',
   '自由',
-  '速度以外自由',
 ];
 
 export const CHARACTER_COLOR_PALETTE = [
@@ -38,6 +41,9 @@ export const DEFAULT_CHARACTER_COLORS = [
 
 export const OTHER_CHARACTER_COLOR = '#aebfff';
 
+/**
+ * 編成編集で表示する5枠分の空キャラデータを作成する。
+ */
 export const createEmptyCharacters = (): Character[] =>
   Array.from({ length: 5 }, (_, index) => ({
     id: `character-${index + 1}`,
@@ -47,12 +53,18 @@ export const createEmptyCharacters = (): Character[] =>
     equipment2: '未選択',
   }));
 
+/**
+ * 単体ログとして扱う初期データを作成する。
+ */
 export const createInitialData = (): AppData => ({
   title: '',
   characters: createEmptyCharacters(),
   logs: [],
 });
 
+/**
+ * 複数ログ管理用の初期データを作成する。
+ */
 export const createInitialBook = (): BattleLogBook => ({
   version: 2,
   activeLogId: null,

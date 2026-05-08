@@ -10,6 +10,10 @@ type ActionCardProps = {
   onDelete: (log: ActionLog) => void;
 };
 
+/**
+ * 1つのタイムに登録された行動ログをカード形式で表示する。
+ * キャラごとの色を左線とキャラ名に反映し、編集・削除の操作もまとめる。
+ */
 export function ActionCard({ log, characters, onEdit, onDelete }: ActionCardProps) {
   const characterMap = new Map(characters.map((character) => [character.id, character]));
   const visibleActions = log.actions.filter(

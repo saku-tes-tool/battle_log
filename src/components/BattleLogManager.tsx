@@ -1,11 +1,12 @@
-import { Edit3 } from 'lucide-react';
-import type { ReactNode, RefObject } from 'react';
+import { Edit3, HelpCircle } from 'lucide-react';
+import { useState, type ReactNode, type RefObject } from 'react';
 import type { ActionLog, AppData } from '../types';
 import { getCharacterColor } from '../utils/characterColor';
 import { sortLogsByTimeDesc } from '../utils/sort';
 import { ActionCard } from './ActionCard';
 import { FloatingActionButton } from './FloatingActionButton';
 import { FooterActions } from './FooterActions';
+import { UsageGuideModal } from './UsageGuideModal';
 
 type BattleLogManagerProps = {
   data: AppData;
@@ -23,12 +24,15 @@ type BattleLogManagerProps = {
   onImportJson: () => void;
   onSaveImage: () => void;
   onCopyText: () => void;
+  onDeleteCurrent?: () => void;
   clearLabel?: string;
+  deleteLabel?: string;
+  deleteDisabled?: boolean;
   importDisabled?: boolean;
 };
 
 /**
- * アプリのメイン表示コンポーネント。
+ * 個別ログの編集画面を表示するメインコンポーネント。
  * localStorageやモーダル制御はApp側に置き、ここでは編成・ログ・フッター操作の配置に集中する。
  */
 export function BattleLogManager({
@@ -47,25 +51,37 @@ export function BattleLogManager({
   onImportJson,
   onSaveImage,
   onCopyText,
+  onDeleteCurrent,
   clearLabel,
+  deleteLabel,
+  deleteDisabled,
   importDisabled,
 }: BattleLogManagerProps) {
   const activeCharacters = data.characters.filter((character) => character.name.trim());
   const sortedLogs = sortLogsByTimeDesc(data.logs);
+  const [showsUsageGuide, setShowsUsageGuide] = useState(false);
 
   return (
     <>
       <div className="page-shell">
         <main className="app" ref={appRef}>
           <header className="app-header no-export">
-            <div>
-              <h1>バトルログ管理</h1>
+            <div className="app-header__main">
+              <div className="app-header__top">
+                <h1>行動ログ管理</h1>
+                <div className="app-header__actions no-export">
+                  <button className="small-icon-button" type="button" onClick={() => setShowsUsageGuide(true)}>
+                    <HelpCircle size={16} />
+                    <span>使い方</span>
+                  </button>
+                  <button className="small-icon-button" type="button" onClick={onBackToList}>
+                    {backIcon}
+                    <span>{backLabel}</span>
+                  </button>
+                </div>
+              </div>
               <p className="storage-note">※入力したデータはこの端末内にのみ保存され、外部へ送信されません。</p>
             </div>
-            <button className="small-icon-button no-export" type="button" onClick={onBackToList}>
-              {backIcon}
-              <span>{backLabel}</span>
-            </button>
           </header>
 
           <section className="log-title-panel">
@@ -154,13 +170,17 @@ export function BattleLogManager({
             onImportJson={onImportJson}
             onSaveImage={onSaveImage}
             onCopyText={onCopyText}
+            onDeleteCurrent={onDeleteCurrent}
             clearLabel={clearLabel}
+            deleteLabel={deleteLabel}
+            deleteDisabled={deleteDisabled}
             importDisabled={importDisabled}
           />
         </main>
       </div>
 
       {sortedLogs.length > 0 && <FloatingActionButton onClick={onAddAction} />}
+      {showsUsageGuide && <UsageGuideModal onClose={() => setShowsUsageGuide(false)} />}
     </>
   );
 }

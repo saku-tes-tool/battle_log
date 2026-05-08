@@ -9,10 +9,14 @@ type CharacterSetupModalProps = {
   onSave: (characters: Character[]) => void;
 };
 
+/**
+ * 編成のキャラ名・魔道具・備考・表示色を編集するモーダル。
+ * 上の枠から順番に登録する前提にして、未入力枠以降を無効化する。
+ */
 export function CharacterSetupModal({ characters, onClose, onSave }: CharacterSetupModalProps) {
   const [draft, setDraft] = useState(() => characters.map((character) => ({ ...character })));
 
-  // キャラは上から順に有効化し、前の枠が空なら後続枠を編集不可にする。
+  /** キャラは上から順に有効化し、前の枠が空なら後続枠を編集不可にする。 */
   const enabledIndexes = useMemo(() => {
     const indexes = new Set<number>();
     for (let i = 0; i < draft.length; i += 1) {
@@ -29,7 +33,7 @@ export function CharacterSetupModal({ characters, onClose, onSave }: CharacterSe
     );
   };
 
-  // 無効な枠と名前未入力の魔道具は保存時に未選択へ戻す。
+  /** 無効な枠と名前未入力の魔道具は保存時に未選択へ戻す。 */
   const handleSave = () => {
     onSave(
       draft.map((character, index) => {
@@ -58,7 +62,7 @@ export function CharacterSetupModal({ characters, onClose, onSave }: CharacterSe
           <p>キャラは上から順に有効になります。</p>
         </header>
 
-        <div className="form-stack">
+        <div className="modal__scroll-body form-stack">
           {draft.map((character, index) => {
             const enabled = enabledIndexes.has(index);
             const equipmentEnabled = enabled && character.name.trim();

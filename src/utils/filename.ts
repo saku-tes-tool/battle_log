@@ -15,6 +15,26 @@ export const createTimestamp = (date = new Date()) => {
   ].join('');
 };
 
+/**
+ * 出力ファイル名に使う短い時刻文字列を生成する。
+ * 例: 260513_212305
+ */
+export const createExportTimestamp = (date = new Date()) => {
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return [
+    pad(date.getFullYear() % 100),
+    pad(date.getMonth() + 1),
+    pad(date.getDate()),
+    '_',
+    pad(date.getHours()),
+    pad(date.getMinutes()),
+    pad(date.getSeconds()),
+  ].join('');
+};
+
+/**
+ * 画面表示や自動タイトルに使う読みやすい時刻文字列を生成する。
+ */
 export const createDisplayTimestamp = (date = new Date()) => {
   const pad = (value: number) => String(value).padStart(2, '0');
   return `${date.getFullYear()}/${pad(date.getMonth() + 1)}/${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
@@ -32,5 +52,36 @@ export const sanitizeFileBaseName = (name: string) => {
     .replace(/_+/g, '_')
     .replace(/^_+|_+$/g, '');
 
-  return sanitized || 'battle-log';
+  return sanitized || '行動ログ';
 };
+
+/**
+ * ログタイトルを優先した保存用ファイル名のベースを生成する。
+ * タイトルが空の場合は既定名を使い、末尾に時刻を付けて重複しにくくする。
+ */
+export const createBattleLogFileBaseName = (title?: string, fallback = '行動ログ') => {
+  const baseName = sanitizeFileBaseName(title?.trim() || fallback);
+  return `${baseName}-${createTimestamp()}`;
+};
+
+/**
+ * 個別JSON出力用のファイル名ベースを生成する。
+ */
+export const createActionLogExportFileBaseName = (title?: string) => {
+  const baseName = sanitizeFileBaseName(title?.trim() || '行動ログ');
+  return `${baseName}_export_${createExportTimestamp()}`;
+};
+
+/**
+ * 画像保存用のファイル名を生成する。
+ */
+export const createActionLogImageFileName = (title?: string) => {
+  const baseName = sanitizeFileBaseName(title?.trim() || '行動ログ');
+  return `${baseName}_${createExportTimestamp()}.png`;
+};
+
+/**
+ * 一覧全体のJSON出力用ファイル名ベースを生成する。
+ */
+export const createAllActionLogsExportFileBaseName = () =>
+  `全行動ログ_export_${createExportTimestamp()}`;

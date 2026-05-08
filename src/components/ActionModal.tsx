@@ -21,6 +21,10 @@ const createDraftAction = (): DraftAction => ({
   note: '',
 });
 
+/**
+ * 編集対象の行動をモーダル用の一時データへ変換する。
+ * 古いJSONなどでidが重複していても、行削除が崩れないように一意化する。
+ */
 const createDraftActions = (items?: ActionItem[]): DraftAction[] => {
   if (!items?.length) return [createDraftAction()];
 
@@ -86,7 +90,7 @@ export function ActionModal({ characters, log, onClose, onSave, onDelete }: Acti
           <p>キャラを選び、行動か備考が入力された行だけ保存されます。</p>
         </header>
 
-        <div className="form-stack">
+        <div className="modal__scroll-body form-stack">
           <label>
             <span>タイム</span>
             <input

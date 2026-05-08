@@ -1,17 +1,24 @@
-import { Download, Edit3, FileUp, Trash2 } from 'lucide-react';
+import { Copy, Download, Edit3, FileUp, HelpCircle, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 import { FloatingActionButton } from './FloatingActionButton';
+import { UsageGuideModal } from './UsageGuideModal';
 import type { BattleLogEntry } from '../types';
 
 type LogListViewProps = {
   logs: BattleLogEntry[];
   onCreate: () => void;
   onOpen: (id: string) => void;
+  onDuplicate: (id: string) => void;
   onDelete: (id: string) => void;
   onExportAll: () => void;
   onImportJson: () => void;
   onClearAll: () => void;
 };
 
+/**
+ * 一覧表示用の日付文字列へ変換する。
+ * localStorage由来の不正な日付は空文字にして表示崩れを避ける。
+ */
 const formatUpdatedAt = (value: string) => {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return '';
@@ -19,23 +26,35 @@ const formatUpdatedAt = (value: string) => {
   return `${date.getFullYear()}/${pad(date.getMonth() + 1)}/${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
 };
 
+/**
+ * 複数の行動ログを選択・複製・削除する一覧画面。
+ * 新規作成はフローティングボタン、まとめ操作は下部に配置する。
+ */
 export function LogListView({
   logs,
   onCreate,
   onOpen,
+  onDuplicate,
   onDelete,
   onExportAll,
   onImportJson,
   onClearAll,
 }: LogListViewProps) {
   const sortedLogs = [...logs].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  const [showsUsageGuide, setShowsUsageGuide] = useState(false);
 
   return (
     <div className="page-shell">
       <main className="app">
         <header className="app-header">
-          <div>
-            <h1>バトルログ管理</h1>
+          <div className="app-header__main">
+            <div className="app-header__top">
+              <h1>行動ログ管理</h1>
+              <button className="small-icon-button" type="button" onClick={() => setShowsUsageGuide(true)}>
+                <HelpCircle size={16} />
+                <span>使い方</span>
+              </button>
+            </div>
             <p className="storage-note">※入力したデータはこの端末内にのみ保存され、外部へ送信されません。</p>
           </div>
         </header>
@@ -68,6 +87,15 @@ export function LogListView({
                       >
                         <Edit3 size={15} />
                         <span>編集</span>
+                      </button>
+                      <button
+                        className="card-action-button"
+                        type="button"
+                        onClick={() => onDuplicate(log.id)}
+                        aria-label={`${log.title || '未タイトル'}を複製`}
+                      >
+                        <Copy size={15} />
+                        <span>複製</span>
                       </button>
                       <button
                         className="card-action-button danger"
@@ -110,6 +138,7 @@ export function LogListView({
         </footer>
       </main>
       {logs.length > 0 && <FloatingActionButton label="新規作成" onClick={onCreate} />}
+      {showsUsageGuide && <UsageGuideModal onClose={() => setShowsUsageGuide(false)} />}
     </div>
   );
 }

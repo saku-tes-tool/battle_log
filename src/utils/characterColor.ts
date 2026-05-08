@@ -1,6 +1,10 @@
 import { DEFAULT_CHARACTER_COLORS, OTHER_CHARACTER_COLOR, OTHER_CHARACTER_ID } from '../constants';
 import type { Character } from '../types';
 
+/**
+ * キャラIDから表示色を取得する。
+ * 未指定のキャラは枠順のデフォルト色を使い、その他は専用色で固定する。
+ */
 export const getCharacterColor = (
   characterId: string,
   characters: Character[],

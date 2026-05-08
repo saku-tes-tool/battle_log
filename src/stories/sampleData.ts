@@ -59,7 +59,7 @@ export const sampleLog: ActionLog = {
 };
 
 export const sampleData: AppData = {
-  title: '5月バトルログ',
+  title: '5月行動ログ',
   characters: sampleCharacters,
   logs: [
     sampleLog,

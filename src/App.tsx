@@ -7,7 +7,12 @@ import { ArrowLeft } from 'lucide-react';
 import { LEGACY_STORAGE_KEY, STORAGE_KEY, createInitialBook } from './constants';
 import type { ActionLog, AppData, BattleLogBook, BattleLogEntry, Character } from './types';
 import { cleanupLogsForCharacters } from './utils/dataCleanup';
-import { createTimestamp } from './utils/filename';
+import {
+  createActionLogExportFileBaseName,
+  createActionLogImageFileName,
+  createAllActionLogsExportFileBaseName,
+} from './utils/filename';
+import { createId } from './utils/id';
 import { saveElementAsImage } from './utils/imageExport';
 import { downloadJson, importJson, toEntryJson } from './utils/jsonData';
 import { createDraftLogData, createEntryFromData, isBattleLogBook, isBattleLogBookJson, isBattleLogEntryJson, migrateLegacyData, touchEntry } from './utils/logBook';
@@ -64,6 +69,9 @@ export default function App() {
     view.type === 'detail' ? book.logs.find((entry) => entry.id === view.logId) ?? null : null;
   const currentData = view.type === 'draft' ? draftData : activeEntry;
 
+  /**
+   * 指定したログだけを更新し、更新日時と最後に触ったログIDも同時に更新する。
+   */
   const updateEntry = (logId: string, updater: (entry: BattleLogEntry) => BattleLogEntry) => {
     setBook((current) => ({
       ...current,
@@ -86,6 +94,10 @@ export default function App() {
     }
   };
 
+  /**
+   * 新規作成中のデータを、編成が登録されたタイミングで正式なログへ昇格する。
+   * タイトルだけでは一覧に保存しないようにして、空ログの増殖を防ぐ。
+   */
   const createDraftEntryIfReady = (data: AppData) => {
     const hasCharacters = data.characters.some((character) => character.name.trim());
     if (!hasCharacters) {
@@ -138,6 +150,19 @@ export default function App() {
     deleteEntry(activeEntry.id);
   };
 
+  const clearActionLogs = () => {
+    if (view.type === 'draft') {
+      setDraftData((current) => ({ ...current, logs: [] }));
+      return;
+    }
+
+    if (!activeEntry || !window.confirm('行動ログをすべて削除しますか？')) return;
+    updateEntry(activeEntry.id, (entry) => ({
+      ...entry,
+      logs: [],
+    }));
+  };
+
   const deleteEntry = (logId: string) => {
     const target = book.logs.find((entry) => entry.id === logId);
     if (!target || !window.confirm(`${target.title || '未タイトル'}を削除しますか？`)) return;
@@ -161,9 +186,33 @@ export default function App() {
     setView({ type: 'list' });
   };
 
+  /**
+   * 一覧管理用のログIDだけを新しくしてログを複製する。
+   * 行動ログ内のIDは編集時の同一行識別に使うため、そのまま引き継ぐ。
+   */
+  const duplicateEntry = (logId: string) => {
+    const target = book.logs.find((entry) => entry.id === logId);
+    if (!target || !window.confirm(`${target.title || '未タイトル'}を複製しますか？`)) return;
+
+    const now = new Date().toISOString();
+    const duplicated: BattleLogEntry = {
+      ...target,
+      id: createId(),
+      title: `${target.title || '未タイトル'} コピー`,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    setBook((current) => ({
+      ...current,
+      activeLogId: duplicated.id,
+      logs: [...current.logs, duplicated],
+    }));
+  };
+
   const handleExportCurrentJson = () => {
     if (!activeEntry || !window.confirm('JSONを保存しますか？')) return;
-    const defaultName = `battle-log-${createTimestamp()}`;
+    const defaultName = createActionLogExportFileBaseName(activeEntry.title);
     const fileName = window.prompt('保存するJSONファイル名を入力してください。', defaultName);
     if (fileName === null) return;
     downloadJson(toEntryJson(activeEntry), fileName);
@@ -171,7 +220,7 @@ export default function App() {
 
   const handleExportAllJson = () => {
     if (!window.confirm('すべてのログをJSON保存しますか？')) return;
-    const defaultName = `battle-log-all-${createTimestamp()}`;
+    const defaultName = createAllActionLogsExportFileBaseName();
     const fileName = window.prompt('保存するJSONファイル名を入力してください。', defaultName);
     if (fileName === null) return;
     downloadJson(book, fileName);
@@ -279,7 +328,7 @@ export default function App() {
   const handleSaveImage = async () => {
     if (!window.confirm('画像を保存しますか？')) return;
     if (!appRef.current) return;
-    await saveElementAsImage(appRef.current);
+    await saveElementAsImage(appRef.current, createActionLogImageFileName(currentData?.title));
   };
 
   const handleCopyText = async () => {
@@ -305,6 +354,7 @@ export default function App() {
             setBook((current) => ({ ...current, activeLogId: logId }));
             setView({ type: 'detail', logId });
           }}
+          onDuplicate={duplicateEntry}
           onDelete={deleteEntry}
           onExportAll={handleExportAllJson}
           onImportJson={() => openJsonImport('list')}
@@ -342,12 +392,15 @@ export default function App() {
         onAddAction={() => setModal({ type: 'action' })}
         onEditLog={(target) => setModal({ type: 'action', log: target })}
         onDeleteLog={deleteActionLog}
-        onClear={deleteCurrentEntry}
+        onClear={clearActionLogs}
         onExportJson={handleExportCurrentJson}
         onImportJson={() => openJsonImport('detail')}
         onSaveImage={handleSaveImage}
         onCopyText={handleCopyText}
-        clearLabel="このログを削除"
+        onDeleteCurrent={deleteCurrentEntry}
+        clearLabel="ログをクリア"
+        deleteLabel="ログを削除"
+        deleteDisabled={!activeEntry}
         importDisabled={view.type === 'draft'}
       />
 

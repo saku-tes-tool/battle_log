@@ -7,7 +7,7 @@ import { createTimestamp } from './filename';
  */
 export const saveElementAsImage = async (
   element: HTMLElement,
-  filename = `battle-log-${createTimestamp()}.png`,
+  filename = `行動ログ_${createTimestamp()}.png`,
 ) => {
   document.body.classList.add('is-exporting-image');
   await new Promise((resolve) => window.requestAnimationFrame(resolve));
@@ -15,7 +15,7 @@ export const saveElementAsImage = async (
   try {
     const canvas = await html2canvas(element, {
       backgroundColor: '#111114',
-      scale: Math.min(window.devicePixelRatio || 1, 2),
+      scale: 2,
       windowWidth: element.scrollWidth,
       windowHeight: element.scrollHeight,
     });

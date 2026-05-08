@@ -115,6 +115,9 @@ const normalizeSingleData = (data: AppData): AppData => ({
   logs: sortLogsByTimeDesc(data.logs),
 });
 
+/**
+ * 個別ログをインポート可能なJSON保存形式へ変換する。
+ */
 export const toEntryJson = (entry: BattleLogEntry): BattleLogEntryJson => ({
   version: 2,
   type: 'entry',
@@ -124,15 +127,22 @@ export const toEntryJson = (entry: BattleLogEntry): BattleLogEntryJson => ({
   },
 });
 
+/**
+ * 一覧全体をまとめて保存できるJSON形式へ変換する。
+ */
 export const toBookJson = (book: BattleLogBook): BattleLogBookJson => ({
   ...book,
   type: 'book',
   logs: book.logs.map((entry) => toEntryJson(entry).entry),
 });
 
+/**
+ * 行動ログのJSONファイルをブラウザからダウンロードする。
+ * ファイル名はWindowsでも扱いやすい文字に整えてから保存する。
+ */
 export const downloadJson = (
   data: AppData | BattleLogEntryJson | BattleLogBook,
-  baseName = `battle-log-${createTimestamp()}`,
+  baseName = `行動ログ_${createTimestamp()}`,
 ) => {
   const normalizedData = isBattleLogBook(data)
     ? toBookJson(data)
@@ -150,6 +160,10 @@ export const downloadJson = (
   URL.revokeObjectURL(url);
 };
 
+/**
+ * 読み込んだJSON文字列を現在の内部形式へ正規化する。
+ * v2の個別・一覧形式に加えて、旧単体形式も受け取れる。
+ */
 export const importJson = (json: string): BattleLogImportData => {
   const parsed: unknown = JSON.parse(json);
 

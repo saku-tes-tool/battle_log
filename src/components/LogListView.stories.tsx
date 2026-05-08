@@ -34,6 +34,7 @@ const meta = {
     ],
     onCreate: () => undefined,
     onOpen: () => undefined,
+    onDuplicate: () => undefined,
     onDelete: () => undefined,
     onExportAll: () => undefined,
     onImportJson: () => undefined,

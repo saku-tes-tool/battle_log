@@ -2,6 +2,10 @@ import { OTHER_CHARACTER_ID } from '../constants';
 import type { AppData } from '../types';
 import { sortLogsByTimeDesc } from './sort';
 
+/**
+ * テキスト出力用のキャラ名を取得する。
+ * その他IDだけは編成に存在しないため固定名で返す。
+ */
 const getCharacterName = (characterId: string, data: AppData) => {
   if (characterId === OTHER_CHARACTER_ID) return 'その他';
   return data.characters.find((character) => character.id === characterId)?.name || '未設定';
@@ -17,7 +21,7 @@ export const formatBattleLogText = (data: AppData) => {
   const title = data.title?.trim();
 
   if (title) {
-    lines.push('【タイトル】', title, '');
+    lines.push(title, '');
   }
 
   lines.push('【編成】');
@@ -30,10 +34,14 @@ export const formatBattleLogText = (data: AppData) => {
       lines.push(`${character.name} - ${equipments.join(' / ') || '魔道具未選択'}`);
       const note = character.note?.trim();
       if (note) {
-        note
+        const noteText = note
           .split(/\r?\n/)
           .filter((line) => line.trim())
-          .forEach((line) => lines.push(`  ※ ${line.trim()}`));
+          .map((line) => line.trim())
+          .join(' / ');
+        if (noteText) {
+          lines[lines.length - 1] = `${lines[lines.length - 1]} ※ ${noteText}`;
+        }
       }
     });
   } else {
@@ -45,25 +53,31 @@ export const formatBattleLogText = (data: AppData) => {
   const logs = sortLogsByTimeDesc(data.logs);
   if (logs.length > 0) {
     logs.forEach((log) => {
-      lines.push(`- ${log.time}`);
+      lines.push(`- ${log.time}秒`);
 
       log.actions
         .filter((item) => item.characterId && (item.action.trim() || item.note.trim()))
         .forEach((item) => {
-          lines.push(`  ${getCharacterName(item.characterId, data)}`);
-          // 行動と備考は複数行入力を想定し、各行を箇条書きとして出力する。
-          item.action
+          const characterName = getCharacterName(item.characterId, data);
+          const actionLines = item.action
             .trim()
             .split(/\r?\n/)
             .filter((line) => line.trim())
-            .forEach((line) => lines.push(`    - ${line.trim()}`));
+            .map((line) => line.trim());
+
+          if (actionLines.length > 0) {
+            lines.push(`  - ${characterName}：${actionLines[0]}`);
+            actionLines.slice(1).forEach((line) => lines.push(`    ${line}`));
+          } else {
+            lines.push(`  - ${characterName}`);
+          }
 
           if (item.note.trim()) {
             item.note
               .trim()
               .split(/\r?\n/)
               .filter((line) => line.trim())
-              .forEach((line) => lines.push(`    - ${line.trim()}`));
+              .forEach((line) => lines.push(`    ※ ${line.trim()}`));
           }
         });
     });
