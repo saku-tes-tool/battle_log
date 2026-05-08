@@ -1,6 +1,7 @@
-import type { AppData, Character } from './types';
+import type { AppData, BattleLogBook, Character } from './types';
 
-export const STORAGE_KEY = 'battle_log_manager_v1';
+export const LEGACY_STORAGE_KEY = 'battle_log_manager_v1';
+export const STORAGE_KEY = 'battle_log_manager_v2';
 
 export const OTHER_CHARACTER_ID = 'other';
 
@@ -16,6 +17,27 @@ export const EQUIPMENT_OPTIONS = [
   '速度以外自由',
 ];
 
+export const CHARACTER_COLOR_PALETTE = [
+  '#6ee7b7',
+  '#93c5fd',
+  '#facc15',
+  '#fb7185',
+  '#c4b5fd',
+  '#67e8f9',
+  '#fdba74',
+  '#f0abfc',
+];
+
+export const DEFAULT_CHARACTER_COLORS = [
+  '#6ee7b7',
+  '#93c5fd',
+  '#facc15',
+  '#fb7185',
+  '#c4b5fd',
+];
+
+export const OTHER_CHARACTER_COLOR = '#aebfff';
+
 export const createEmptyCharacters = (): Character[] =>
   Array.from({ length: 5 }, (_, index) => ({
     id: `character-${index + 1}`,
@@ -26,6 +48,13 @@ export const createEmptyCharacters = (): Character[] =>
   }));
 
 export const createInitialData = (): AppData => ({
+  title: '',
   characters: createEmptyCharacters(),
+  logs: [],
+});
+
+export const createInitialBook = (): BattleLogBook => ({
+  version: 2,
+  activeLogId: null,
   logs: [],
 });

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { EQUIPMENT_OPTIONS } from '../constants';
 import type { Character } from '../types';
+import { getCharacterColor } from '../utils/characterColor';
 
 type CharacterSetupModalProps = {
   characters: Character[];
@@ -28,7 +29,7 @@ export function CharacterSetupModal({ characters, onClose, onSave }: CharacterSe
     );
   };
 
-  // 無効な枠と名前未入力の装備は保存時に未選択へ戻す。
+  // 無効な枠と名前未入力の魔道具は保存時に未選択へ戻す。
   const handleSave = () => {
     onSave(
       draft.map((character, index) => {
@@ -38,6 +39,7 @@ export function CharacterSetupModal({ characters, onClose, onSave }: CharacterSe
           ...character,
           name: enabled ? character.name.trim() : '',
           note: enabled && character.name.trim() ? note.trim() : '',
+          color: enabled && character.name.trim() ? character.color || undefined : undefined,
           equipment1: enabled && character.name.trim() ? character.equipment1 : '未選択',
           equipment2: enabled && character.name.trim() ? character.equipment2 : '未選択',
         };
@@ -60,20 +62,31 @@ export function CharacterSetupModal({ characters, onClose, onSave }: CharacterSe
           {draft.map((character, index) => {
             const enabled = enabledIndexes.has(index);
             const equipmentEnabled = enabled && character.name.trim();
+            const characterColor = getCharacterColor(character.id, draft, '#7da5ff');
             return (
               <fieldset className="character-fieldset" key={character.id} disabled={!enabled}>
                 <legend>キャラ{index + 1}</legend>
-                <label>
+                <div className="character-name-field">
                   <span>キャラ名</span>
-                  <input
-                    value={character.name}
-                    onChange={(event) => updateCharacter(index, { name: event.target.value })}
-                    placeholder="キャラ名を入力"
-                  />
-                </label>
+                  <div className="character-name-row">
+                    <input
+                      value={character.name}
+                      onChange={(event) => updateCharacter(index, { name: event.target.value })}
+                      placeholder="キャラ名を入力"
+                    />
+                    <input
+                      className="color-input"
+                      type="color"
+                      value={character.color || characterColor || '#7da5ff'}
+                      disabled={!equipmentEnabled}
+                      onChange={(event) => updateCharacter(index, { color: event.target.value })}
+                      aria-label={`キャラ${index + 1}の色`}
+                    />
+                  </div>
+                </div>
                 <div className="split-fields">
                   <label>
-                    <span>装備1</span>
+                    <span>魔道具1</span>
                     <select
                       value={character.equipment1}
                       disabled={!equipmentEnabled}
@@ -87,7 +100,7 @@ export function CharacterSetupModal({ characters, onClose, onSave }: CharacterSe
                     </select>
                   </label>
                   <label>
-                    <span>装備2</span>
+                    <span>魔道具2</span>
                     <select
                       value={character.equipment2}
                       disabled={!equipmentEnabled}

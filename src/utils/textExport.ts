@@ -13,14 +13,21 @@ const getCharacterName = (characterId: string, data: AppData) => {
  */
 export const formatBattleLogText = (data: AppData) => {
   const activeCharacters = data.characters.filter((character) => character.name.trim());
-  const lines: string[] = ['```text', '【編成】'];
+  const lines: string[] = ['```text'];
+  const title = data.title?.trim();
+
+  if (title) {
+    lines.push('【タイトル】', title, '');
+  }
+
+  lines.push('【編成】');
 
   if (activeCharacters.length > 0) {
     activeCharacters.forEach((character) => {
       const equipments = [character.equipment1, character.equipment2].filter(
         (equipment) => equipment && equipment !== '未選択',
       );
-      lines.push(`${character.name} - ${equipments.join(' / ') || '装備未選択'}`);
+      lines.push(`${character.name} - ${equipments.join(' / ') || '魔道具未選択'}`);
       const note = character.note?.trim();
       if (note) {
         note

@@ -5,6 +5,7 @@ export const sampleCharacters = [
     id: 'character-1',
     name: 'キャラ1',
     note: '役割メモ',
+    color: '#62d6a4',
     equipment1: '装備A',
     equipment2: '装備C',
   },
@@ -58,6 +59,7 @@ export const sampleLog: ActionLog = {
 };
 
 export const sampleData: AppData = {
+  title: '5月バトルログ',
   characters: sampleCharacters,
   logs: [
     sampleLog,

@@ -14,6 +14,8 @@ const meta = {
   args: {
     data: sampleData,
     onEditCharacters: () => undefined,
+    onBackToList: () => undefined,
+    onTitleChange: () => undefined,
     onAddAction: () => undefined,
     onEditLog: () => undefined,
     onDeleteLog: () => undefined,

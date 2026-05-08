@@ -225,15 +225,85 @@ h2 {
 
 /* ==========================================================================
    Formation
-   編成カードとキャラ/装備の表示。
+   編成カードとキャラ/魔道具の表示。
    ========================================================================== */
 
 .formation-panel,
+.log-title-panel,
 .empty-card,
 .action-card {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   background: #24252b;
+}
+
+.log-title-panel {
+  margin-bottom: 14px;
+  padding: 13px 15px;
+}
+
+.log-title-panel input {
+  font-size: 1.08rem;
+  font-weight: 700;
+}
+
+.log-title-export {
+  display: none;
+  font-size: 1.12rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.log-index-section {
+  padding-top: 4px;
+}
+
+.log-index-list {
+  display: grid;
+  gap: 12px;
+}
+
+.log-index-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: #24252b;
+}
+
+.log-index-card__main {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  text-align: left;
+}
+
+.log-index-card__main strong,
+.log-index-card__main span,
+.log-index-card__main small {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.log-index-card__main span,
+.log-index-card__main small {
+  color: #a7abbc;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.log-index-card__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .formation-panel {
@@ -277,6 +347,20 @@ h2 {
   min-width: 0;
   display: grid;
   gap: 3px;
+}
+
+.formation-item__main strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.formation-color-chip {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.08);
 }
 
 .formation-item:last-child {
@@ -543,6 +627,7 @@ label {
   gap: 6px;
 }
 
+.character-name-field > span,
 label span,
 legend {
   color: #d5d8e7;
@@ -607,6 +692,59 @@ legend {
   gap: 10px;
 }
 
+.character-name-field {
+  display: grid;
+  gap: 6px;
+}
+
+.character-name-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.color-input {
+  width: 42px;
+  height: 42px;
+  min-height: 42px;
+  padding: 0;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: #2a2c35;
+  cursor: pointer;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.18),
+    0 0 0 0 rgba(125, 165, 255, 0);
+}
+
+.color-input:focus {
+  outline: 0;
+  border-color: #ffffff;
+  box-shadow:
+    0 0 0 2px rgba(125, 165, 255, 0.34),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.18);
+}
+
+.color-input::-webkit-color-swatch-wrapper {
+  padding: 3px;
+}
+
+.color-input::-webkit-color-swatch {
+  border: 0;
+  border-radius: 8px;
+}
+
+.color-input::-moz-color-swatch {
+  border: 0;
+  border-radius: 8px;
+}
+
+.color-input:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
 .modal__actions {
   position: sticky;
   bottom: -18px;
@@ -624,6 +762,20 @@ legend {
 
 .is-exporting-image .no-export {
   display: none !important;
+}
+
+.is-exporting-image .log-title-panel {
+  border-color: transparent;
+  background: transparent;
+  padding: 0 0 14px;
+}
+
+.is-exporting-image .log-title-input {
+  display: none;
+}
+
+.is-exporting-image .log-title-export {
+  display: block;
 }
 
 .is-exporting-image .page-shell,

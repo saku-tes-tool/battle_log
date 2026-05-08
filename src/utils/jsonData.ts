@@ -1,7 +1,18 @@
 import { OTHER_CHARACTER_ID, createEmptyCharacters } from '../constants';
-import type { ActionItem, ActionLog, AppData, Character } from '../types';
+import type {
+  ActionItem,
+  ActionLog,
+  AppData,
+  BattleLogBook,
+  BattleLogBookJson,
+  BattleLogEntry,
+  BattleLogEntryJson,
+  BattleLogImportData,
+  Character,
+} from '../types';
 import { createTimestamp, sanitizeFileBaseName } from './filename';
 import { createId } from './id';
+import { isBattleLogBook, isBattleLogBookJson, isBattleLogEntryJson } from './logBook';
 import { sortLogsByTimeDesc } from './sort';
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -10,10 +21,6 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 const asString = (value: unknown, fallback = '') =>
   typeof value === 'string' ? value : fallback;
 
-/**
- * 外部JSONのキャラ配列を、アプリで扱える最大5枠のCharacter配列へ正規化する。
- * 欠けた枠や重複IDは安全な初期値へ戻す。
- */
 const normalizeCharacters = (value: unknown): Character[] => {
   if (!Array.isArray(value)) throw new Error('Invalid characters');
 
@@ -32,16 +39,13 @@ const normalizeCharacters = (value: unknown): Character[] => {
       id,
       name: asString(source.name).trim(),
       note: asString(source.note).trim(),
+      color: asString(source.color) || undefined,
       equipment1: asString(source.equipment1, '未選択') || '未選択',
       equipment2: asString(source.equipment2, '未選択') || '未選択',
     };
   });
 };
 
-/**
- * 外部JSONのログ配列を、表示・編集できるActionLog配列へ正規化する。
- * 不正な時間、空の行動、存在しないキャラIDの行動は読み飛ばす。
- */
 const normalizeLogs = (value: unknown, characters: Character[]): ActionLog[] => {
   if (!Array.isArray(value)) throw new Error('Invalid logs');
 
@@ -88,12 +92,53 @@ const normalizeLogs = (value: unknown, characters: Character[]): ActionLog[] => 
   return sortLogsByTimeDesc(logs);
 };
 
-export const downloadJson = (data: AppData, baseName = `battle-log-${createTimestamp()}`) => {
-  // 保存時は表示順と同じタイム降順に揃え、localStorageと同じ形で書き出す。
-  const normalizedData: AppData = {
-    characters: data.characters,
-    logs: sortLogsByTimeDesc(data.logs),
+const normalizeEntry = (value: unknown): BattleLogEntry => {
+  if (!isRecord(value) || !Array.isArray(value.characters) || !Array.isArray(value.logs)) {
+    throw new Error('Invalid battle log entry');
+  }
+
+  const characters = normalizeCharacters(value.characters);
+  const now = new Date().toISOString();
+  return {
+    id: asString(value.id, createId()),
+    title: asString(value.title).trim(),
+    characters,
+    logs: normalizeLogs(value.logs, characters),
+    createdAt: asString(value.createdAt, now),
+    updatedAt: asString(value.updatedAt, now),
   };
+};
+
+const normalizeSingleData = (data: AppData): AppData => ({
+  title: data.title?.trim() || '',
+  characters: data.characters,
+  logs: sortLogsByTimeDesc(data.logs),
+});
+
+export const toEntryJson = (entry: BattleLogEntry): BattleLogEntryJson => ({
+  version: 2,
+  type: 'entry',
+  entry: {
+    ...entry,
+    ...normalizeSingleData(entry),
+  },
+});
+
+export const toBookJson = (book: BattleLogBook): BattleLogBookJson => ({
+  ...book,
+  type: 'book',
+  logs: book.logs.map((entry) => toEntryJson(entry).entry),
+});
+
+export const downloadJson = (
+  data: AppData | BattleLogEntryJson | BattleLogBook,
+  baseName = `battle-log-${createTimestamp()}`,
+) => {
+  const normalizedData = isBattleLogBook(data)
+    ? toBookJson(data)
+    : isBattleLogEntryJson(data)
+      ? toEntryJson(data.entry)
+      : normalizeSingleData(data);
   const blob = new Blob([JSON.stringify(normalizedData, null, 2)], {
     type: 'application/json;charset=utf-8',
   });
@@ -105,12 +150,34 @@ export const downloadJson = (data: AppData, baseName = `battle-log-${createTimes
   URL.revokeObjectURL(url);
 };
 
-/**
- * JSON文字列をAppDataとして読み込む。
- * トップレベル構造が違うJSONは別用途のファイルとして扱い、例外を投げる。
- */
-export const importJson = (json: string): AppData => {
+export const importJson = (json: string): BattleLogImportData => {
   const parsed: unknown = JSON.parse(json);
+
+  if (isBattleLogBookJson(parsed) || isBattleLogBook(parsed)) {
+    const logs = parsed.logs.flatMap((entry) => {
+      try {
+        return [normalizeEntry(entry)];
+      } catch {
+        return [];
+      }
+    });
+
+    return {
+      version: 2,
+      type: 'book',
+      activeLogId: asString(parsed.activeLogId) || logs[0]?.id || null,
+      logs,
+    };
+  }
+
+  if (isBattleLogEntryJson(parsed)) {
+    return {
+      version: 2,
+      type: 'entry',
+      entry: normalizeEntry(parsed.entry),
+    };
+  }
+
   if (!isRecord(parsed) || !Array.isArray(parsed.characters) || !Array.isArray(parsed.logs)) {
     throw new Error('Invalid battle log JSON');
   }
@@ -118,6 +185,7 @@ export const importJson = (json: string): AppData => {
   const characters = normalizeCharacters(parsed.characters);
 
   return {
+    title: asString(parsed.title).trim(),
     characters,
     logs: normalizeLogs(parsed.logs, characters),
   };

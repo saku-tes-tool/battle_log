@@ -1,6 +1,7 @@
 import { Edit3, Trash2 } from 'lucide-react';
 import { OTHER_CHARACTER_ID } from '../constants';
 import type { ActionLog, Character } from '../types';
+import { getCharacterColor } from '../utils/characterColor';
 
 type ActionCardProps = {
   log: ActionLog;
@@ -39,10 +40,15 @@ export function ActionCard({ log, characters, onEdit, onDelete }: ActionCardProp
           {visibleActions.map((item) => {
             const character = characterMap.get(item.characterId);
             const characterName = item.characterId === OTHER_CHARACTER_ID ? 'その他' : character?.name || '未設定';
+            const characterColor = getCharacterColor(item.characterId, characters);
             return (
-              <div className="action-row" key={item.id}>
+              <div
+                className="action-row"
+                key={item.id}
+                style={characterColor ? { borderLeftColor: characterColor } : undefined}
+              >
                 <div className="action-row__head">
-                  <strong>{characterName}</strong>
+                  <strong style={characterColor ? { color: characterColor } : undefined}>{characterName}</strong>
                 </div>
                 {item.action.trim() && <p>{item.action}</p>}
                 {item.note.trim() && <small>{item.note}</small>}

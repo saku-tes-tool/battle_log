@@ -7,6 +7,8 @@ type FooterActionsProps = {
   onImportJson: () => void;
   onSaveImage: () => void;
   onCopyText: () => void;
+  clearLabel?: string;
+  importDisabled?: boolean;
 };
 
 export function FooterActions({
@@ -16,6 +18,8 @@ export function FooterActions({
   onImportJson,
   onSaveImage,
   onCopyText,
+  clearLabel = 'クリア',
+  importDisabled = false,
 }: FooterActionsProps) {
   return (
     <footer className="footer-actions no-export">
@@ -23,7 +27,7 @@ export function FooterActions({
         <FileDown size={18} />
         <span>JSON保存</span>
       </button>
-      <button className="icon-button" type="button" onClick={onImportJson} aria-label="JSON取込">
+      <button className="icon-button" type="button" onClick={onImportJson} disabled={importDisabled} aria-label="JSON取込">
         <FileUp size={18} />
         <span>JSON取込</span>
       </button>
@@ -37,7 +41,7 @@ export function FooterActions({
       </button>
       <button className="icon-button danger" type="button" onClick={onClear} aria-label="データクリア">
         <Trash2 size={18} />
-        <span>クリア</span>
+        <span>{clearLabel}</span>
       </button>
     </footer>
   );
