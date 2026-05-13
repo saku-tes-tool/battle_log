@@ -1,5 +1,5 @@
 import { Edit3, HelpCircle } from 'lucide-react';
-import { useState, type ReactNode, type RefObject } from 'react';
+import { useEffect, useState, type ReactNode, type RefObject } from 'react';
 import type { ActionLog, AppData } from '../types';
 import { getCharacterColor } from '../utils/characterColor';
 import { sortLogsByTimeDesc } from '../utils/sort';
@@ -60,6 +60,16 @@ export function BattleLogManager({
   const activeCharacters = data.characters.filter((character) => character.name.trim());
   const sortedLogs = sortLogsByTimeDesc(data.logs);
   const [showsUsageGuide, setShowsUsageGuide] = useState(false);
+
+  /**
+   * 使い方モーダル表示中は背面の詳細画面スクロールを止める。
+   */
+  useEffect(() => {
+    document.body.classList.toggle('has-open-modal', showsUsageGuide);
+    return () => {
+      document.body.classList.remove('has-open-modal');
+    };
+  }, [showsUsageGuide]);
 
   return (
     <>

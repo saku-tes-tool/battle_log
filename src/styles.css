@@ -30,6 +30,10 @@ body {
   scrollbar-width: none;
 }
 
+body.has-open-modal {
+  overflow: hidden;
+}
+
 html,
 body,
 #root {

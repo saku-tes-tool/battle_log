@@ -65,6 +65,14 @@ export default function App() {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(book));
   }, [book]);
 
+  useEffect(() => {
+    const hasOpenModal = Boolean(modal);
+    document.body.classList.toggle('has-open-modal', hasOpenModal);
+    return () => {
+      document.body.classList.remove('has-open-modal');
+    };
+  }, [modal]);
+
   const activeEntry =
     view.type === 'detail' ? book.logs.find((entry) => entry.id === view.logId) ?? null : null;
   const currentData = view.type === 'draft' ? draftData : activeEntry;

@@ -1,5 +1,5 @@
 import { Copy, Download, Edit3, FileUp, HelpCircle, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FloatingActionButton } from './FloatingActionButton';
 import { UsageGuideModal } from './UsageGuideModal';
 import type { BattleLogEntry } from '../types';
@@ -42,6 +42,16 @@ export function LogListView({
 }: LogListViewProps) {
   const sortedLogs = [...logs].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
   const [showsUsageGuide, setShowsUsageGuide] = useState(false);
+
+  /**
+   * 使い方モーダル表示中は背面の一覧スクロールを止める。
+   */
+  useEffect(() => {
+    document.body.classList.toggle('has-open-modal', showsUsageGuide);
+    return () => {
+      document.body.classList.remove('has-open-modal');
+    };
+  }, [showsUsageGuide]);
 
   return (
     <div className="page-shell">
